@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const app = express();
 const PORT = 3000;
@@ -6,7 +5,7 @@ const PORT = 3000;
 // Middleware to parse JSON body
 app.use(express.json());
 
-
+// List of 50 jokes (already defined below)
 const jokes = [
   { id: 1, joke: "Why don’t scientists trust atoms? Because they make up everything!" },
   { id: 2, joke: "Why did the scarecrow win an award? Because he was outstanding in his field!" },
@@ -60,25 +59,31 @@ const jokes = [
   { id: 50, joke: "Want to hear a joke about construction? I’m still working on it." },
 ];
 
-// GET route for jokes
+// ✅ GET route with optional `limit` query
 app.get('/jokes', (req, res) => {
-  res.json(jokes);
+  const limit = parseInt(req.query.limit) || 50;
+
+  if (limit < 1 || limit > 50) {
+    return res.status(400).json({ error: 'Limit must be between 1 and 50' });
+  }
+
+  const result = jokes.slice(0, limit);
+  res.status(200).json(result);
 });
 
-// POST route to handle email and password
+// ✅ POST route to handle login (email & password)
 app.post('/login', (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    // Check if both fields are provided
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required' });
-    }
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
 
-    // Respond with email only
-    return res.status(200).json({ email });
+  // For now, just respond with the email
+  res.status(200).json({ email });
 });
 
-// Start server
+// ✅ Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
